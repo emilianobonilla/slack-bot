@@ -374,6 +374,40 @@ def test_plugins(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json"
         )
 
+# Debug endpoint for recent events
+@app.route(route="debug/recent-events", auth_level=func.AuthLevel.ANONYMOUS)
+def recent_events(req: func.HttpRequest) -> func.HttpResponse:
+    """Show recently processed events for debugging"""
+    try:
+        from src.utils.deduplication import message_deduplicator
+        from src.utils.early_dedup import get_stats as get_early_stats
+        
+        # Get recent events from both deduplicators
+        regular_stats = message_deduplicator.get_stats()
+        early_stats = get_early_stats()
+        recent_messages = list(message_deduplicator.processed_messages.keys())[-10:]  # Last 10 messages
+        
+        debug_info = {
+            "recent_message_ids": recent_messages,
+            "total_processed": len(message_deduplicator.processed_messages),
+            "regular_deduplication_stats": regular_stats,
+            "early_deduplication_stats": early_stats,
+            "queue_status": "Active",
+            "timestamp": str(__import__('datetime').datetime.utcnow())
+        }
+        
+        return func.HttpResponse(
+            json.dumps(debug_info, indent=2),
+            mimetype="application/json"
+        )
+        
+    except Exception as e:
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json"
+        )
+
 # Azure Function HTTP trigger for Slack slash commands
 @app.route(route="slack/commands", auth_level=func.AuthLevel.ANONYMOUS)
 def slack_commands(req: func.HttpRequest) -> func.HttpResponse:

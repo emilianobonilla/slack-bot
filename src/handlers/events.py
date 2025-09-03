@@ -22,18 +22,32 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
         client: Slack client
         body: Full request body
     """
-    # Acknowledge immediately to avoid timeout
-    ack()
-    logger.log_event("app_mention", event)
-    
     user = event.get("user")
     channel = event.get("channel")
     text = event.get("text", "")
+    timestamp = event.get("ts")
+    
+    # Create unique event ID for early deduplication
+    event_id = f"{user}_{channel}_{timestamp}"
+    
+    # EARLY deduplication check - before ack()
+    from ..utils.early_dedup import is_duplicate_or_processing, mark_event_completed
+    if is_duplicate_or_processing(event_id):
+        logger.logger.warning(f"Duplicate/processing app_mention detected, ignoring: {event_id}")
+        ack()  # Still acknowledge to Slack
+        return
+    
+    # Acknowledge immediately to avoid timeout
+    ack()
+    
+    logger.log_event("app_mention", event, event_id=event_id)
     
     try:
-        # Send immediate acknowledgment to user
+        # Send immediate acknowledgment to user with message preview
+        message_preview = text[:100].replace('<@U', '<@').replace('>', '') if len(text) > 100 else text.replace('<@U', '<@').replace('>', '')
+        
         say(
-            text=f"⚡ <@{user}>, recibí tu mensaje y lo estoy procesando...",
+            text=f"⚡ <@{user}>, recibí tu mensaje: '*{message_preview}*' y lo estoy procesando... (ID: {event_id[-8:]})",
             channel=channel
         )
         
@@ -59,8 +73,13 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
                 "Event sent to Service Bus for processing", 
                 user_id=user, 
                 channel_id=channel,
-                text_preview=text[:50]
+                text_preview=text[:50],
+                event_id=event_id,
+                message_length=len(text)
             )
+            
+            # Mark event as completed
+            mark_event_completed(event_id)
         else:
             # Fallback: send error message
             say(
@@ -73,8 +92,15 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
                 channel_id=channel
             )
             
+            # Mark event as completed even on failure
+            mark_event_completed(event_id)
+            
     except Exception as e:
         logger.log_error(e, "Error handling app mention", user_id=user, channel_id=channel)
+        
+        # Mark event as completed even on exception
+        mark_event_completed(event_id)
+        
         try:
             # Try to send error response
             say(
@@ -117,16 +143,6 @@ def _send_to_service_bus(event_data):
         with ServiceBusClient.from_connection_string(connection_string) as client:
             # Get queue sender
             with client.get_queue_sender(queue_name="slack-events") as sender:
-                # Generate unique message ID for deduplication
-                import hashlib
-                message_components = [
-                    event_data.get("user_id", ""),
-                    event_data.get("channel_id", ""),
-                    event_data.get("timestamp", ""),
-                    event_data.get("text", "")[:100]
-                ]
-                message_content = "|".join(str(c) for c in message_components)
-                message_id = hashlib.md5(message_content.encode()).hexdigest()
                 
                 # Create message
                 message_body = json.dumps(event_data)
