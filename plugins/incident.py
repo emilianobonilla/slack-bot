@@ -31,7 +31,7 @@ class IncidentPlugin(BasePlugin):
         
         if not incident_id:
             return PluginResponse(
-                text="I couldn't extract the incident number. Expected format: 'incidente 123'",
+                text="I couldn't extract the incident number. Expected format: 'incident 123'",
                 response_type="channel"
             )
         
@@ -55,7 +55,7 @@ class IncidentPlugin(BasePlugin):
     
     def _extract_incident_id(self, matched_text: str) -> Optional[str]:
         """Extract incident ID from matched text."""
-        match = re.search(r'incidente\s+(\d+)', matched_text, re.IGNORECASE)
+        match = re.search(r'incident\\s+(\\d+)', matched_text, re.IGNORECASE)
         return match.group(1) if match else None
     
     def _get_mock_incident_data(self, incident_id: str) -> Dict[str, Any]:
@@ -164,4 +164,4 @@ class IncidentPlugin(BasePlugin):
     
     def get_help_text(self) -> str:
         """Return help text for incident plugin."""
-        return "incidente <number> - Gets detailed information for the specified incident"
+        return "incident <number> - Gets detailed information for the specified incident"

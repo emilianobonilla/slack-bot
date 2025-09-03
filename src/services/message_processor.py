@@ -148,7 +148,7 @@ class SlackMessageProcessor:
             # Prepare message data
             message_kwargs = {
                 "channel": target_channel,
-                "text": response.text or "Mensaje procesado"
+                "text": response.text or "Message processed"
             }
             
             # Add blocks if available
@@ -245,7 +245,7 @@ class SlackMessageProcessor:
             if not user_id or not channel_id:
                 return
             
-            error_text = f"❌ <@{user_id}>, hubo un error procesando tu comando: {error_message}"
+            error_text = f"<@{user_id}>, there was an error processing your command: {error_message}"
             
             self.slack_client.chat_postMessage(
                 channel=channel_id,

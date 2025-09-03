@@ -12,7 +12,7 @@ plugins:
   - name: "incident"
     module: "plugins.incident"
     patterns:
-      - "incidente \\d+"  # regex pattern
+      - "incident \\d+"  # regex pattern
     pattern_type: "regex"
     description: "Get incident information by ID"
     enabled: true

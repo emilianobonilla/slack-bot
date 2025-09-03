@@ -123,14 +123,14 @@ def handle_help_command(ack: Ack, respond: Respond, command):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "• `/info`\\n  Muestra información sobre el bot"
+                "text": "• `/info`\\n  Show information about the bot"
             }
         },
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "• `/help`\\n  Muestra esta ayuda"
+                "text": "• `/help`\\n  Show this help"
             }
         },
         {
@@ -140,7 +140,7 @@ def handle_help_command(ack: Ack, respond: Respond, command):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*También puedes:*\\n• Mencionarme con `@{app_config.NAME}` en cualquier canal\\n• Enviarme un mensaje directo"
+                "text": "*You can also:*\\n• Mention me with `@{app_config.NAME}` in any channel\\n• Send me a direct message"
             }
         }
     ]

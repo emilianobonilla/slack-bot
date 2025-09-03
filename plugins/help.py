@@ -16,7 +16,7 @@ class HelpPlugin(BasePlugin):
         
         Args:
             event_data: Full Slack event data
-            matched_text: The matched text ("help" or "ayuda")
+            matched_text: The matched text ("help")
             
         Returns:
             PluginResponse with help information
@@ -64,8 +64,8 @@ class HelpPlugin(BasePlugin):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                "text": "• `@bot ping` - Verify connectivity\\n" +
-                           "• `@bot incidente <number>` - Get incident information\\n" +
+                    "text": "• `@bot ping` - Verify connectivity\\n" +
+                           "• `@bot incident <number>` - Get incident information\\n" +
                            "• `@bot help` - Show this help\\n" +
                            "• `@bot status` - Show bot status"
                 }
@@ -89,19 +89,19 @@ class HelpPlugin(BasePlugin):
                     "type": "mrkdwn",
                     "text": "*Examples:*\\n" +
                            "• `@bot ping`\\n" +
-                           "• `@bot incidente 123`\\n" +
+                           "• `@bot incident 123`\\n" +
                            "• `@bot help`"
                 }
             },
             {
                 "type": "context",
                 "elements": [
-                [
                     {
                         "type": "mrkdwn",
                         "text": "Need additional help? Contact the system administrator."
                     }
                 ]
+            }
         ]
         
         return blocks

@@ -19,7 +19,7 @@ class StatusPlugin(BasePlugin):
         
         Args:
             event_data: Full Slack event data
-            matched_text: The matched text ("status" or "estado")
+            matched_text: The matched text ("status")
             
         Returns:
             PluginResponse with status information
