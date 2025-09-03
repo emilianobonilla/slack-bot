@@ -7,6 +7,3 @@ flake8
 isort
 mypy
 types-requests
-
-# Azure Functions testing
-azure-functions-worker

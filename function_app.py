@@ -2,6 +2,7 @@ import azure.functions as func
 import logging
 import json
 import os
+import sys
 from slack_bolt import App
 import hashlib
 import hmac
@@ -50,9 +51,10 @@ def _check_plugins() -> bool:
     try:
         from src.plugins.loader import PluginLoader
         loader = PluginLoader()
-        plugins = loader.load_plugins()
-        return len(plugins) > 0
-    except Exception:
+        loader.load_plugins()  # This loads plugins into loader.plugins
+        return len(loader.plugins) > 0  # Check the loaded plugins
+    except Exception as e:
+        logging.error(f"Plugin check failed: {e}")
         return False
 
 def _check_dependencies() -> bool:
@@ -66,6 +68,29 @@ def _check_dependencies() -> bool:
         return False
     except Exception:
         return False
+
+def _get_plugin_details() -> dict:
+    """Get detailed plugin information for debugging"""
+    try:
+        from src.plugins.loader import PluginLoader
+        loader = PluginLoader()
+        loader.load_plugins()
+        
+        plugin_details = {
+            "total_loaded": len(loader.plugins),
+            "plugins": []
+        }
+        
+        for plugin in loader.plugins:
+            plugin_details["plugins"].append({
+                "name": plugin.name,
+                "class": plugin.__class__.__name__,
+                "patterns": getattr(plugin.config, 'patterns', []) if hasattr(plugin, 'config') else []
+            })
+        
+        return plugin_details
+    except Exception as e:
+        return {"error": str(e), "total_loaded": 0, "plugins": []}
 
 # Utility function to verify Slack request signature
 def verify_slack_signature(signing_secret: str, timestamp: str, body: bytes, signature: str) -> bool:
@@ -179,8 +204,12 @@ def health_check(req: func.HttpRequest) -> func.HttpResponse:
                 },
                 "azure_functions": {
                     "status": "up",
-                    "runtime": os.environ.get("FUNCTIONS_WORKER_RUNTIME", "unknown"),
-                    "version": os.environ.get("FUNCTIONS_EXTENSION_VERSION", "unknown")
+                    "runtime": os.environ.get("FUNCTIONS_WORKER_RUNTIME", "python"),
+                    "version": os.environ.get("FUNCTIONS_EXTENSION_VERSION", "~4")
+                },
+                "python": {
+                    "version": sys.version,
+                    "version_info": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
                 },
                 "configuration": {
                     "status": "up" if _check_configuration() else "down",
@@ -193,6 +222,10 @@ def health_check(req: func.HttpRequest) -> func.HttpResponse:
                 "src_modules": _check_src_modules(),
                 "plugins": _check_plugins(),
                 "dependencies": _check_dependencies()
+            },
+            "details": {
+                "plugin_info": _get_plugin_details(),
+                "config_file_exists": os.path.exists("plugins.yaml")
             }
         }
         
