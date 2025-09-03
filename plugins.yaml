@@ -1,0 +1,43 @@
+# Configuration file for Slack bot plugins
+# Plugins are evaluated in order - first match wins
+
+plugins:
+  - name: "ping"
+    module: "plugins.ping"
+    patterns: 
+      - "ping"
+    description: "Simple ping-pong response"
+    enabled: true
+    
+  - name: "incident"
+    module: "plugins.incident"
+    patterns:
+      - "incidente \\d+"  # regex pattern
+    description: "Get incident information by ID"
+    enabled: true
+    config:
+      # Plugin-specific configuration
+      incident_api_url: "https://api.example.com/incidents"
+      timeout: 30
+      
+  - name: "help"
+    module: "plugins.help"
+    patterns:
+      - "help"
+      - "ayuda"
+    description: "Show available commands and plugins"
+    enabled: true
+    
+  - name: "status"
+    module: "plugins.status"
+    patterns:
+      - "status"
+      - "estado"
+    description: "Show bot status and health"
+    enabled: true
+
+# Global plugin configuration
+global_config:
+  default_timeout: 30
+  max_response_length: 4000
+  enable_threading: true

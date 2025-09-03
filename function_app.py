@@ -216,6 +216,109 @@ def test_settings(req: func.HttpRequest) -> func.HttpResponse:
         mimetype="application/json"
     )
 
+# Azure Function Service Bus trigger for processing Slack events
+@app.service_bus_queue_trigger(
+    arg_name="msg", 
+    queue_name="slack-events",
+    connection="SERVICE_BUS_CONNECTION_STRING"
+)
+def process_slack_events(msg: func.ServiceBusMessage) -> None:
+    """Process Slack events from Service Bus queue using plugins"""
+    logging.info(f"Processing Service Bus message - ID: {msg.message_id}, Delivery count: {msg.delivery_count}")
+    
+    try:
+        # Parse message body
+        message_body = msg.get_body().decode('utf-8')
+        message_data = json.loads(message_body)
+        
+        logging.info(f"Parsed message data: {json.dumps(message_data, indent=2)[:500]}...")
+        
+        # Import and use message processor
+        try:
+            from src.services.message_processor import message_processor
+            
+            # Process the message
+            success = message_processor.process_message(message_data)
+            
+            if success:
+                logging.info("Message processed successfully")
+            else:
+                logging.warning("Message processing failed - may be duplicate or invalid")
+                # Don't raise exception to avoid unnecessary retries for duplicates
+                # The processor already handles duplicates and invalid messages
+                
+        except ImportError as e:
+            logging.error(f"Failed to import message processor: {e}")
+            # Fallback processing (optional)
+            _fallback_message_processing(message_data)
+            
+    except json.JSONDecodeError as e:
+        logging.error(f"Failed to parse message JSON: {e}")
+        # This is a permanent error, don't retry
+        return
+    except Exception as e:
+        logging.error(f"Error processing Service Bus message: {e}", exc_info=True)
+        # Re-raise to trigger retry
+        raise
+
+
+def _fallback_message_processing(message_data):
+    """
+    Fallback message processing when main processor fails to import.
+    """
+    logging.info("Using fallback message processing")
+    
+    try:
+        # Basic fallback - just send a simple response
+        slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
+        if not slack_bot_token:
+            logging.error("SLACK_BOT_TOKEN not available for fallback processing")
+            return
+        
+        from slack_sdk import WebClient
+        client = WebClient(token=slack_bot_token)
+        
+        user_id = message_data.get("user_id")
+        channel_id = message_data.get("channel_id")
+        
+        if user_id and channel_id:
+            client.chat_postMessage(
+                channel=channel_id,
+                text=f"⚠️ <@{user_id}>, sistema en mantenimiento. Inténtalo de nuevo más tarde."
+            )
+            logging.info("Fallback response sent to user")
+            
+    except Exception as e:
+        logging.error(f"Fallback processing also failed: {e}")
+
+# Debug endpoint for monitoring deduplication
+@app.route(route="debug/dedup-stats", auth_level=func.AuthLevel.ANONYMOUS)
+def dedup_stats(req: func.HttpRequest) -> func.HttpResponse:
+    """Show deduplication statistics for debugging"""
+    try:
+        from src.utils.deduplication import message_deduplicator
+        stats = message_deduplicator.get_stats()
+        
+        debug_info = {
+            "deduplication_stats": stats,
+            "timestamp": str(__import__('datetime').datetime.utcnow()),
+            "environment": {
+                "service_bus_configured": bool(os.environ.get("SERVICE_BUS_CONNECTION_STRING")),
+                "slack_configured": bool(os.environ.get("SLACK_BOT_TOKEN"))
+            }
+        }
+        
+        return func.HttpResponse(
+            json.dumps(debug_info, indent=2),
+            mimetype="application/json"
+        )
+    except Exception as e:
+        return func.HttpResponse(
+            json.dumps({"error": str(e)}),
+            status_code=500,
+            mimetype="application/json"
+        )
+
 # Azure Function HTTP trigger for Slack slash commands
 @app.route(route="slack/commands", auth_level=func.AuthLevel.ANONYMOUS)
 def slack_commands(req: func.HttpRequest) -> func.HttpResponse:
