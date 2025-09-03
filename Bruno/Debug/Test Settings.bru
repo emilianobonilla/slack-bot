@@ -1,0 +1,27 @@
+meta {
+  name: Test Settings
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/test-settings
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test Settings Endpoint
+  
+  This endpoint displays environment variables and configuration status.
+  Useful for verifying that the Function App is properly configured.
+  
+  ## Response
+  - Shows environment variables (with secrets masked)
+  - Configuration validation status
+  - System information
+}

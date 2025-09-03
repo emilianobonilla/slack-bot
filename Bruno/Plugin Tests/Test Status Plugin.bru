@@ -1,0 +1,32 @@
+meta {
+  name: Test Status Plugin
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/api/debug/test-plugins?text=status
+  body: none
+  auth: none
+}
+
+params:query {
+  text: status
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test Status Plugin
+  
+  Tests the status plugin with the "status" command.
+  
+  ## Expected Response
+  Should match the status plugin and show:
+  - Plugin name: "status"
+  - Pattern matched: "status"
+  - Pattern type: "string"
+  - Matched text: "status"
+}

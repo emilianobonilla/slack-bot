@@ -1,0 +1,49 @@
+meta {
+  name: Info Command
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/slack/commands
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+  X-Slack-Signature: test-signature
+  X-Slack-Request-Timestamp: 1609459200
+}
+
+body:form-urlencoded {
+  token: verification_token
+  team_id: T1234567890
+  team_domain: example
+  channel_id: C1234567890
+  channel_name: general
+  user_id: U1234567890
+  user_name: testuser
+  command: /info
+  text: 
+  response_url: https://hooks.slack.com/commands/1234/5678
+  trigger_id: 13345224609.738474920.8088930838d88f008e0
+}
+
+docs {
+  # /info Command
+  
+  Tests the /info slash command that shows bot information.
+  
+  ## Expected Response
+  Should return bot information including:
+  - Bot name and version
+  - Current environment
+  - Available commands
+  - Usage statistics
+  
+  ## Command Details
+  - Command: `/info`
+  - No additional parameters required
+  - Returns immediate response with bot details
+}

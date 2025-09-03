@@ -1,0 +1,40 @@
+meta {
+  name: Test Plugins
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{base_url}}/api/debug/test-plugins?text=ping
+  body: none
+  auth: none
+}
+
+params:query {
+  text: ping
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test Plugin Matching
+  
+  Test plugin pattern matching with different text inputs.
+  
+  ## Query Parameters
+  - `text` (required): Text to test against plugin patterns
+  
+  ## Examples
+  - `?text=ping` - Should match ping plugin
+  - `?text=incident 123` - Should match incident plugin
+  - `?text=help` - Should match help plugin
+  - `?text=status` - Should match status plugin
+  - `?text=random text` - Should show no matches
+  
+  ## Response
+  - Plugin matching results
+  - Pattern match details
+  - Plugin configuration info
+}

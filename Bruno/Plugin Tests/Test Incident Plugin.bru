@@ -1,0 +1,33 @@
+meta {
+  name: Test Incident Plugin
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/debug/test-plugins?text=incident 123
+  body: none
+  auth: none
+}
+
+params:query {
+  text: incident 123
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test Incident Plugin
+  
+  Tests the incident plugin with a specific incident ID.
+  The incident plugin uses regex pattern: `incident \d+`
+  
+  ## Expected Response
+  Should match the incident plugin and show:
+  - Plugin name: "incident"
+  - Pattern matched: "incident \d+"
+  - Pattern type: "regex"
+  - Matched text: "incident 123"
+}

@@ -1,0 +1,57 @@
+meta {
+  name: Slack Commands
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/slack/commands
+  body: formUrlEncoded
+  auth: none
+}
+
+headers {
+  Content-Type: application/x-www-form-urlencoded
+  X-Slack-Signature: test-signature
+  X-Slack-Request-Timestamp: 1609459200
+}
+
+body:form-urlencoded {
+  token: verification_token
+  team_id: T1234567890
+  team_domain: example
+  channel_id: C1234567890
+  channel_name: general
+  user_id: U1234567890
+  user_name: testuser
+  command: /hello
+  text: test message
+  response_url: https://hooks.slack.com/commands/1234/5678
+  trigger_id: 13345224609.738474920.8088930838d88f008e0
+}
+
+docs {
+  # Slack Commands Endpoint
+  
+  This endpoint handles slash commands from Slack.
+  
+  ## Supported Commands
+  - `/hello [message]` - Greet the bot with optional message
+  - `/info` - Show bot information
+  - `/help` - Show help information
+  
+  ## Headers Required
+  - `X-Slack-Signature`: Slack request signature
+  - `X-Slack-Request-Timestamp`: Unix timestamp
+  - `Content-Type`: application/x-www-form-urlencoded
+  
+  ## Form Parameters
+  - `command`: The slash command used (/hello, /info, /help)
+  - `text`: Additional text provided with the command
+  - `user_id`: Slack user ID who triggered the command
+  - `channel_id`: Channel where command was triggered
+  - `response_url`: URL to send delayed responses
+  
+  ## Testing
+  This request simulates a /hello command with "test message".
+}

@@ -1,0 +1,54 @@
+meta {
+  name: App Mention - Incident
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/api/slack/events
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-Slack-Signature: test-signature
+  X-Slack-Request-Timestamp: 1609459200
+}
+
+body:json {
+  {
+    "token": "verification_token",
+    "team_id": "T1234567890",
+    "api_app_id": "A1234567890",
+    "event": {
+      "type": "app_mention",
+      "user": "U1234567890",
+      "text": "<@U0BOTUSER> incident 456",
+      "ts": "1609459200.000100",
+      "channel": "C1234567890",
+      "event_ts": "1609459200.000100"
+    },
+    "type": "event_callback",
+    "event_id": "Ev1234567890",
+    "event_time": 1609459200
+  }
+}
+
+docs {
+  # App Mention - Incident Command
+  
+  Simulates a user mentioning the bot with an incident command.
+  Example: "@bot incident 456"
+  
+  ## Expected Flow
+  1. Bot receives mention event
+  2. Sends immediate acknowledgment
+  3. Queues event in Service Bus
+  4. Message processor picks up event
+  5. Incident plugin processes "incident 456"
+  6. Bot responds with incident information for ID 456
+  
+  ## Plugin Behavior
+  The incident plugin will extract "456" and return mock incident data.
+}

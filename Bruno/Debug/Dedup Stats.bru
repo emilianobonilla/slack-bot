@@ -1,0 +1,28 @@
+meta {
+  name: Dedup Stats
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/debug/dedup-stats
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Deduplication Statistics
+  
+  Shows statistics about message deduplication system.
+  Useful for monitoring duplicate message prevention.
+  
+  ## Response
+  - Cache statistics (hits, misses, size)
+  - Recent deduplication events
+  - Cache configuration details
+  - Memory usage information
+}

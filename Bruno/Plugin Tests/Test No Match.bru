@@ -1,0 +1,31 @@
+meta {
+  name: Test No Match
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/debug/test-plugins?text=random text that should not match
+  body: none
+  auth: none
+}
+
+params:query {
+  text: random text that should not match
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test No Plugin Match
+  
+  Tests with text that should not match any plugin patterns.
+  
+  ## Expected Response
+  Should show no plugin matches:
+  - Empty plugin matches array
+  - Message indicating no plugins matched
+  - All available plugins listed for reference
+}

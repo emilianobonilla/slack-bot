@@ -1,0 +1,32 @@
+meta {
+  name: Test Help Plugin
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{base_url}}/api/debug/test-plugins?text=help
+  body: none
+  auth: none
+}
+
+params:query {
+  text: help
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Test Help Plugin
+  
+  Tests the help plugin with the "help" command.
+  
+  ## Expected Response
+  Should match the help plugin and show:
+  - Plugin name: "help"
+  - Pattern matched: "help"
+  - Pattern type: "string"
+  - Matched text: "help"
+}

@@ -1,0 +1,54 @@
+meta {
+  name: App Mention - Help
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/api/slack/events
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-Slack-Signature: test-signature
+  X-Slack-Request-Timestamp: 1609459200
+}
+
+body:json {
+  {
+    "token": "verification_token",
+    "team_id": "T1234567890",
+    "api_app_id": "A1234567890",
+    "event": {
+      "type": "app_mention",
+      "user": "U1234567890",
+      "text": "<@U0BOTUSER> help",
+      "ts": "1609459200.000100",
+      "channel": "C1234567890",
+      "event_ts": "1609459200.000100"
+    },
+    "type": "event_callback",
+    "event_id": "Ev1234567890",
+    "event_time": 1609459200
+  }
+}
+
+docs {
+  # App Mention - Help Command
+  
+  Simulates a user mentioning the bot with a help request.
+  Example: "@bot help"
+  
+  ## Expected Flow
+  1. Bot receives mention event
+  2. Sends immediate acknowledgment
+  3. Queues event in Service Bus
+  4. Message processor picks up event
+  5. Help plugin processes "help"
+  6. Bot responds with available commands and usage information
+  
+  ## Plugin Behavior
+  The help plugin will return a formatted response with all available commands.
+}

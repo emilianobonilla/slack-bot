@@ -1,0 +1,28 @@
+meta {
+  name: Recent Events
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/debug/recent-events
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Recent Events
+  
+  Shows recent Slack events processed by the bot.
+  Useful for debugging and monitoring bot activity.
+  
+  ## Response
+  - List of recent events with timestamps
+  - Event types and user information
+  - Processing status and results
+  - Error information if any
+}
