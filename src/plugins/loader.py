@@ -170,7 +170,8 @@ class PluginLoader:
         Returns:
             Plugin response or None
         """
-        message_text = event_data.get('event', {}).get('text', '')
+        # Support both direct text and nested event structure
+        message_text = event_data.get('text', '') or event_data.get('event', {}).get('text', '')
         plugin = self.find_plugin_for_message(message_text)
         
         if not plugin:
@@ -209,7 +210,8 @@ class PluginLoader:
         Returns:
             Default plugin response
         """
-        user_id = event_data.get('event', {}).get('user')
+        # Support both direct user_id and nested event structure
+        user_id = event_data.get('user_id', '') or event_data.get('event', {}).get('user', '')
         return PluginResponse(
             text=f"¡Hola <@{user_id}>! No entendí ese comando. Usa `@bot help` para ver los comandos disponibles.",
             response_type="channel"

@@ -151,14 +151,6 @@ def _send_to_service_bus(event_data):
                     queue="slack-events",
                     message_id=message_id
                 )
-                
-                # Send message
-                sender.send_messages(message)
-                logger.logger.info(
-                    "Message sent to Service Bus queue", 
-                    queue="slack-events",
-                    message_id=message_id
-                )
                 return True
                 
     except Exception as e:

@@ -101,17 +101,23 @@ class BasePlugin(ABC):
         """
         import re
         
+        # Check if patterns should be treated as regex
+        pattern_type = self.config.get('pattern_type', 'string')
+        
         for pattern in self.patterns:
-            # Handle both string patterns and regex patterns
-            if isinstance(pattern, str):
+            if pattern_type == 'regex':
+                # Treat as regex pattern
+                try:
+                    match = re.search(pattern, message_text, re.IGNORECASE)
+                    if match:
+                        return match.group(0)
+                except re.error as e:
+                    self.log_error(f"Invalid regex pattern '{pattern}': {e}")
+                    continue
+            else:
                 # Simple string matching (case insensitive)
                 if pattern.lower() in message_text.lower():
                     return pattern
-            else:
-                # Assume it's a regex pattern
-                match = re.search(pattern, message_text, re.IGNORECASE)
-                if match:
-                    return match.group(0)
         
         return None
     

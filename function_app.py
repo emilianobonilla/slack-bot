@@ -319,6 +319,61 @@ def dedup_stats(req: func.HttpRequest) -> func.HttpResponse:
             mimetype="application/json"
         )
 
+# Test endpoint for plugin pattern matching
+@app.route(route="debug/test-plugins", auth_level=func.AuthLevel.ANONYMOUS)
+def test_plugins(req: func.HttpRequest) -> func.HttpResponse:
+    """Test plugin pattern matching"""
+    try:
+        # Get test message from query parameters
+        test_message = req.params.get('message', 'incidente 123')
+        
+        from src.plugins.loader import plugin_loader
+        
+        # Initialize plugins if not already loaded
+        if not plugin_loader._loaded:
+            plugin_loader.load_plugins()
+        
+        results = {
+            "test_message": test_message,
+            "plugins": [],
+            "matched_plugin": None
+        }
+        
+        # Test each plugin
+        for plugin in plugin_loader.plugins:
+            plugin_info = {
+                "name": plugin.name,
+                "patterns": plugin.patterns,
+                "pattern_type": plugin.config.get('pattern_type', 'string'),
+                "can_handle": False,
+                "matched_text": None
+            }
+            
+            matched_text = plugin.can_handle(test_message)
+            if matched_text:
+                plugin_info["can_handle"] = True
+                plugin_info["matched_text"] = matched_text
+                if not results["matched_plugin"]:
+                    results["matched_plugin"] = plugin.name
+            
+            results["plugins"].append(plugin_info)
+        
+        return func.HttpResponse(
+            json.dumps(results, indent=2),
+            mimetype="application/json"
+        )
+        
+    except Exception as e:
+        import traceback
+        return func.HttpResponse(
+            json.dumps({
+                "error": str(e),
+                "traceback": traceback.format_exc()
+            }),
+            status_code=500,
+            mimetype="application/json"
+        )
+
 # Azure Function HTTP trigger for Slack slash commands
 @app.route(route="slack/commands", auth_level=func.AuthLevel.ANONYMOUS)
 def slack_commands(req: func.HttpRequest) -> func.HttpResponse:
