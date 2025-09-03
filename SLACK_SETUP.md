@@ -1,6 +1,6 @@
 # Slack Bot Setup Guide
 
-This guide will help you configure your Slack bot from scratch to get it running in both development and production environments.
+This guide will help you configure your Slack bot from scratch to get it running with Azure Functions using HTTP endpoints.
 
 ## Prerequisites
 
@@ -52,28 +52,19 @@ This guide will help you configure your Slack bot from scratch to get it running
 1. Go to **"Basic Information"** in the sidebar
 2. In the **"App Credentials"** section, copy the **"Signing Secret"**
 
-### 1.5 Configure Socket Mode (For Development)
 
-1. Go to **"Socket Mode"** in the sidebar
-2. Enable **"Enable Socket Mode"**
-3. Create an app-level token:
-   - Click "Generate Token and Scopes"
-   - Name: "socket-mode-token"
-   - Scopes: `connections:write`
-4. **IMPORTANT!** Copy the **"App-Level Token"** that starts with `xapp-`
-
-### 1.6 Configure Event Subscriptions
+### 1.5 Configure Event Subscriptions
 
 1. Go to **"Event Subscriptions"** in the sidebar
 2. Enable **"Enable Events"**
-3. If using Socket Mode, no URL is needed
+3. Set Request URL to: `https://your-function-app.azurewebsites.net/api/slack/events`
 4. In **"Subscribe to bot events"**, add:
    - `app_mention` - When the bot is mentioned
    - `message.im` - Direct messages
    - `reaction_added` - Reactions added
    - `team_join` - New members
 
-### 1.7 Configure Slash Commands (Optional)
+### 1.6 Configure Slash Commands (Optional)
 
 1. Go to **"Slash Commands"** in the sidebar
 2. Click **"Create New Command"**
@@ -81,18 +72,18 @@ This guide will help you configure your Slack bot from scratch to get it running
 
 **Command /hello:**
 - Command: `/hello`
-- Request URL: (empty if using Socket Mode)
+- Request URL: `https://your-function-app.azurewebsites.net/api/slack/commands`
 - Short Description: "Greet the bot"
 - Usage Hint: `[optional message]`
 
 **Command /info:**
 - Command: `/info`
-- Request URL: (empty if using Socket Mode)
+- Request URL: `https://your-function-app.azurewebsites.net/api/slack/commands`
 - Short Description: "Bot information"
 
 **Command /help:**
 - Command: `/help`
-- Request URL: (empty if using Socket Mode)
+- Request URL: `https://your-function-app.azurewebsites.net/api/slack/commands`
 - Short Description: "Bot help"
 
 ## Step 2: Configure Development Environment
@@ -109,8 +100,6 @@ cp .env.template .env
 # Replace with your actual tokens
 SLACK_BOT_TOKEN=xoxb-your-actual-bot-token
 SLACK_SIGNING_SECRET=your-actual-signing-secret
-SLACK_APP_TOKEN=xapp-your-actual-app-token
-SLACK_SOCKET_MODE=true
 ```
 
 ### 2.2 Install Dependencies
@@ -128,21 +117,23 @@ venv\Scripts\activate     # On Windows
 pip install -r requirements.txt
 ```
 
-### 2.3 Test the Configuration
+### 2.3 Test with Azure Functions Locally
 
 ```bash
-# Run the bot in development mode
-python -m src.app
-
-# Or directly:
-python src/app.py
+# Run Azure Functions locally
+func start
 ```
 
 If everything is configured correctly, you'll see:
 ```
-Starting Slack bot app_name=SlackBot version=1.0.0
-Running in Socket Mode (development)
-Bolt app is running!
+Azure Functions Core Tools
+Core Tools Version: 4.x.x
+Function Runtime Version: 4.x.x
+
+Host lock lease acquired by instance ID: xxxxxxxx
+Functions:
+  health_check: [GET,POST] http://localhost:7071/api/health
+  slack_events: [GET,POST] http://localhost:7071/api/slack/events
 ```
 
 ## Step 3: Test the Bot

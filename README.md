@@ -197,7 +197,6 @@ sequenceDiagram
 |----------|-------------|----------|
 | `SLACK_BOT_TOKEN` | Bot user OAuth token (xoxb-) | Yes |
 | `SLACK_SIGNING_SECRET` | Request verification secret | Yes |
-| `SLACK_APP_TOKEN` | App-level token for Socket Mode (xapp-) | Development |
 | `SERVICE_BUS_CONNECTION_STRING` | Azure Service Bus connection | Production |
 | `APP_NAME` | Bot display name | No |
 | `LOG_LEVEL` | Logging level (DEBUG, INFO, WARNING, ERROR) | No |
@@ -241,9 +240,8 @@ func azure functionapp publish <app-name>
 ### Slack App Configuration
 
 For production deployment:
-1. Disable Socket Mode in your Slack app
-2. Set Event Request URL to: `https://<your-app>.azurewebsites.net/api/slack/events`
-3. Set Slash Command URLs to: `https://<your-app>.azurewebsites.net/api/slack/commands`
+1. Set Event Request URL to: `https://<your-app>.azurewebsites.net/api/slack/events`
+2. Set Slash Command URLs to: `https://<your-app>.azurewebsites.net/api/slack/commands`
 
 ## Development
 

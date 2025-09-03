@@ -14,8 +14,6 @@ class SlackConfig:
     
     BOT_TOKEN: str = os.getenv("SLACK_BOT_TOKEN", "")
     SIGNING_SECRET: str = os.getenv("SLACK_SIGNING_SECRET", "")
-    APP_TOKEN: str = os.getenv("SLACK_APP_TOKEN", "")
-    SOCKET_MODE: bool = os.getenv("SLACK_SOCKET_MODE", "true").lower() == "true"
     
     @classmethod
     def validate(cls) -> list[str]:
@@ -30,10 +28,6 @@ class SlackConfig:
         if not cls.SIGNING_SECRET:
             errors.append("SLACK_SIGNING_SECRET is required")
             
-        if cls.SOCKET_MODE and not cls.APP_TOKEN:
-            errors.append("SLACK_APP_TOKEN is required when using Socket Mode")
-        elif cls.SOCKET_MODE and not cls.APP_TOKEN.startswith("xapp-"):
-            errors.append("SLACK_APP_TOKEN should start with 'xapp-'")
             
         return errors
 
@@ -67,7 +61,6 @@ class Settings:
     def __init__(self):
         self.slack_bot_token: Optional[str] = slack_config.BOT_TOKEN or None
         self.slack_signing_secret: Optional[str] = slack_config.SIGNING_SECRET or None
-        self.slack_app_token: Optional[str] = slack_config.APP_TOKEN or None
         self.functions_worker_runtime: str = app_config.FUNCTIONS_WORKER_RUNTIME
         self.log_level: str = app_config.LOG_LEVEL
     
