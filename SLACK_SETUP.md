@@ -1,259 +1,313 @@
-# Configuración de Slack Bot
+# Slack Bot Setup Guide
 
-Esta guía te ayudará a configurar tu bot de Slack desde cero hasta tenerlo funcionando en desarrollo y producción.
+This guide will help you configure your Slack bot from scratch to get it running in both development and production environments.
 
-## 📋 Prerrequisitos
+## Prerequisites
 
-- Una cuenta de Slack con permisos para crear apps
-- Python 3.8+ instalado
-- Azure account (opcional, para producción)
+- Slack account with permissions to create apps
+- Python 3.8+ installed
+- Azure account (optional, for production)
 
-## 🚀 Paso 1: Crear la App de Slack
+## Step 1: Create the Slack App
 
-### 1.1 Ir al Portal de Slack API
+### 1.1 Access the Slack API Portal
 
-1. Ve a [https://api.slack.com/apps](https://api.slack.com/apps)
-2. Haz clic en "Create New App"
-3. Selecciona "From scratch"
-4. Asigna un nombre a tu app (ej: "Mi Bot de Slack")
-5. Selecciona el workspace donde quieres instalar el bot
+1. Go to [https://api.slack.com/apps](https://api.slack.com/apps)
+2. Click "Create New App"
+3. Select "From scratch"
+4. Give your app a name (e.g., "My Slack Bot")
+5. Select the workspace where you want to install the bot
 
-### 1.2 Configurar Permisos del Bot
+### 1.2 Configure Bot Permissions
 
-1. En la página de tu app, ve a **"OAuth & Permissions"** en el menú lateral
-2. Scrollea hasta **"Scopes"** → **"Bot Token Scopes"**
-3. Agrega los siguientes scopes:
+1. In your app page, go to **"OAuth & Permissions"** in the sidebar
+2. Scroll to **"Scopes"** → **"Bot Token Scopes"**
+3. Add the following scopes:
 
-**Scopes requeridos:**
-- `app_mentions:read` - Para responder cuando mencionen al bot
-- `channels:history` - Para leer mensajes en canales
-- `chat:write` - Para enviar mensajes
-- `commands` - Para manejar slash commands
-- `im:history` - Para leer mensajes directos
-- `im:write` - Para enviar mensajes directos
-- `reactions:read` - Para leer reacciones
-- `users:read` - Para obtener información de usuarios
+**Required scopes:**
+- `app_mentions:read` - To respond when the bot is mentioned
+- `channels:history` - To read messages in channels
+- `chat:write` - To send messages
+- `commands` - To handle slash commands
+- `im:history` - To read direct messages
+- `im:write` - To send direct messages
+- `reactions:read` - To read reactions
+- `users:read` - To get user information
 
-**Scopes opcionales (según necesidades):**
-- `channels:read` - Para obtener información de canales
-- `groups:history` - Para leer mensajes en grupos privados
-- `groups:write` - Para enviar mensajes en grupos privados
-- `team:read` - Para obtener información del equipo
+**Optional scopes (as needed):**
+- `channels:read` - To get channel information
+- `groups:history` - To read messages in private groups
+- `groups:write` - To send messages in private groups
+- `team:read` - To get team information
 
-### 1.3 Instalar la App en tu Workspace
+### 1.3 Install the App in your Workspace
 
-1. Después de agregar los scopes, scroll hacia arriba en la misma página
-2. Haz clic en **"Install to Workspace"**
-3. Autoriza la aplicación
-4. **¡IMPORTANTE!** Copia el **"Bot User OAuth Token"** que empieza con `xoxb-`
+1. After adding scopes, scroll up on the same page
+2. Click **"Install to Workspace"**
+3. Authorize the application
+4. **IMPORTANT!** Copy the **"Bot User OAuth Token"** that starts with `xoxb-`
 
-### 1.4 Obtener el Signing Secret
+### 1.4 Get the Signing Secret
 
-1. Ve a **"Basic Information"** en el menú lateral
-2. En la sección **"App Credentials"**, copia el **"Signing Secret"**
+1. Go to **"Basic Information"** in the sidebar
+2. In the **"App Credentials"** section, copy the **"Signing Secret"**
 
-### 1.5 Configurar Socket Mode (Para Desarrollo)
+### 1.5 Configure Socket Mode (For Development)
 
-1. Ve a **"Socket Mode"** en el menú lateral
-2. Activa **"Enable Socket Mode"**
-3. Crea un token de nivel de app:
-   - Haz clic en "Generate Token and Scopes"
-   - Nombre: "socket-mode-token"
+1. Go to **"Socket Mode"** in the sidebar
+2. Enable **"Enable Socket Mode"**
+3. Create an app-level token:
+   - Click "Generate Token and Scopes"
+   - Name: "socket-mode-token"
    - Scopes: `connections:write`
-4. **¡IMPORTANTE!** Copia el **"App-Level Token"** que empieza con `xapp-`
+4. **IMPORTANT!** Copy the **"App-Level Token"** that starts with `xapp-`
 
-### 1.6 Configurar Event Subscriptions
+### 1.6 Configure Event Subscriptions
 
-1. Ve a **"Event Subscriptions"** en el menú lateral
-2. Activa **"Enable Events"**
-3. Si usas Socket Mode, no necesitas URL
-4. En **"Subscribe to bot events"**, agrega:
-   - `app_mention` - Cuando mencionen al bot
-   - `message.im` - Mensajes directos
-   - `reaction_added` - Reacciones agregadas
-   - `team_join` - Nuevos miembros
+1. Go to **"Event Subscriptions"** in the sidebar
+2. Enable **"Enable Events"**
+3. If using Socket Mode, no URL is needed
+4. In **"Subscribe to bot events"**, add:
+   - `app_mention` - When the bot is mentioned
+   - `message.im` - Direct messages
+   - `reaction_added` - Reactions added
+   - `team_join` - New members
 
-### 1.7 Configurar Slash Commands (Opcional)
+### 1.7 Configure Slash Commands (Optional)
 
-1. Ve a **"Slash Commands"** en el menú lateral
-2. Haz clic en **"Create New Command"**
-3. Configura los siguientes comandos:
+1. Go to **"Slash Commands"** in the sidebar
+2. Click **"Create New Command"**
+3. Configure the following commands:
 
-**Comando /hello:**
+**Command /hello:**
 - Command: `/hello`
-- Request URL: (vacío si usas Socket Mode)
-- Short Description: "Saluda al bot"
-- Usage Hint: `[mensaje opcional]`
+- Request URL: (empty if using Socket Mode)
+- Short Description: "Greet the bot"
+- Usage Hint: `[optional message]`
 
-**Comando /info:**
+**Command /info:**
 - Command: `/info`
-- Request URL: (vacío si usas Socket Mode)
-- Short Description: "Información del bot"
+- Request URL: (empty if using Socket Mode)
+- Short Description: "Bot information"
 
-**Comando /help:**
+**Command /help:**
 - Command: `/help`
-- Request URL: (vacío si usas Socket Mode)
-- Short Description: "Ayuda del bot"
+- Request URL: (empty if using Socket Mode)
+- Short Description: "Bot help"
 
-## 🔧 Paso 2: Configurar el Entorno de Desarrollo
+## Step 2: Configure Development Environment
 
-### 2.1 Configurar Variables de Entorno
+### 2.1 Configure Environment Variables
 
-1. Copia el archivo template:
+1. Copy the template file:
 ```bash
 cp .env.template .env
 ```
 
-2. Edita el archivo `.env` con tus tokens:
+2. Edit the `.env` file with your tokens:
 ```bash
-# Reemplaza con tus tokens reales
+# Replace with your actual tokens
 SLACK_BOT_TOKEN=xoxb-your-actual-bot-token
 SLACK_SIGNING_SECRET=your-actual-signing-secret
 SLACK_APP_TOKEN=xapp-your-actual-app-token
 SLACK_SOCKET_MODE=true
 ```
 
-### 2.2 Instalar Dependencias
+### 2.2 Install Dependencies
 
 ```bash
-# Crear entorno virtual
+# Create virtual environment
 python -m venv venv
 
-# Activar entorno virtual
-source venv/bin/activate  # En macOS/Linux
-# o
-venv\Scripts\activate     # En Windows
+# Activate virtual environment
+source venv/bin/activate  # On macOS/Linux
+# or
+venv\Scripts\activate     # On Windows
 
-# Instalar dependencias
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2.3 Probar la Configuración
+### 2.3 Test the Configuration
 
 ```bash
-# Ejecutar el bot en modo desarrollo
+# Run the bot in development mode
 python -m src.app
 
-# O directamente:
+# Or directly:
 python src/app.py
 ```
 
-Si todo está configurado correctamente, verás:
+If everything is configured correctly, you'll see:
 ```
 Starting Slack bot app_name=SlackBot version=1.0.0
 Running in Socket Mode (development)
-⚡️ Bolt app is running!
+Bolt app is running!
 ```
 
-## 🧪 Paso 3: Probar el Bot
+## Step 3: Test the Bot
 
-### 3.1 Pruebas Básicas
+### 3.1 Basic Tests
 
-1. **Mencionar al bot:** En cualquier canal, escribe `@NombreDeTuBot hola`
-2. **Mensaje directo:** Envía un DM al bot con "hola"
-3. **Slash commands:** Prueba `/hello`, `/info`, `/help`
+1. **Mention the bot:** In any channel, type `@YourBotName hello`
+2. **Direct message:** Send a DM to the bot with "hello"
+3. **Slash commands:** Try `/hello`, `/info`, `/help`
 
-### 3.2 Verificar Logs
+### 3.2 Verify Logs
 
-El bot mostrará logs estructurados en la consola:
+The bot will show structured logs in the console:
 ```
 Processing Slack event event_type=app_mention user_id=U1234567
 Responded to app mention user_id=U1234567 channel_id=C1234567
 ```
 
-## 🌐 Paso 4: Configuración para Producción (Azure Functions)
+## Step 4: Production Configuration (Azure Functions)
 
-### 4.1 Preparar Azure Functions
+### 4.1 Prepare Azure Functions
 
-1. Instala Azure Functions Core Tools:
+1. Install Azure Functions Core Tools:
 ```bash
 npm install -g azure-functions-core-tools@4 --unsafe-perm true
 ```
 
-2. Copia la configuración local:
+2. Copy the local configuration:
 ```bash
 cp local.settings.json.template local.settings.json
 ```
 
-3. Edita `local.settings.json` con tus tokens reales
+3. Edit `local.settings.json` with your actual tokens
 
-### 4.2 Probar Localmente con Azure Functions
+### 4.2 Test Locally with Azure Functions
 
 ```bash
 func start
 ```
 
-### 4.3 Configurar para HTTP Mode (Producción)
+### 4.3 Configure for HTTP Mode (Production)
 
-1. En tu app de Slack, ve a **"Socket Mode"**
-2. **Desactiva Socket Mode**
-3. Ve a **"Event Subscriptions"**
-4. Configura la Request URL: `https://tu-function-app.azurewebsites.net/api/slack/events`
+1. In your Slack app, go to **"Socket Mode"**
+2. **Disable Socket Mode**
+3. Go to **"Event Subscriptions"**
+4. Configure the Request URL: `https://your-function-app.azurewebsites.net/api/slack/events`
+5. Configure Slash Command URLs: `https://your-function-app.azurewebsites.net/api/slack/commands`
 
-### 4.4 Desplegar a Azure
+### 4.4 Deploy to Azure
 
 ```bash
-func azure functionapp publish <nombre-de-tu-function-app>
+func azure functionapp publish <your-function-app-name>
 ```
 
-## 🔍 Solución de Problemas
+### 4.5 Configure Azure Service Bus (Required for Production)
+
+1. Create an Azure Service Bus namespace
+2. Create a queue named "slack-events"
+3. Get the connection string and add it to your Azure Function environment variables:
+   - `SERVICE_BUS_CONNECTION_STRING`
+
+## Troubleshooting
 
 ### Error: "Configuration validation failed"
 
-Verifica que todas las variables de entorno estén configuradas correctamente:
+Verify that all environment variables are configured correctly:
 ```bash
 python -c "from src.config import validate_configuration; print(validate_configuration())"
 ```
 
 ### Error: "Failed to start Slack bot"
 
-1. Verifica que los tokens sean correctos
-2. Asegúrate de que Socket Mode esté habilitado (desarrollo)
-3. Revisa que los scopes estén configurados
+1. Verify that tokens are correct
+2. Ensure Socket Mode is enabled (development)
+3. Check that scopes are configured
 
-### El bot no responde a menciones
+### Bot doesn't respond to mentions
 
-1. Verifica que el bot esté en el canal
-2. Revisa los event subscriptions en Slack
-3. Confirma que el scope `app_mentions:read` esté agregado
+1. Verify the bot is in the channel
+2. Check event subscriptions in Slack
+3. Confirm that `app_mentions:read` scope is added
+4. Check Azure Function logs for errors
 
-### Slash commands no funcionan
+### Slash commands don't work
 
-1. Verifica que los comandos estén creados en Slack
-2. Si usas HTTP mode, configura las URLs correctas
-3. Revisa que el scope `commands` esté agregado
+1. Verify commands are created in Slack
+2. If using HTTP mode, configure URLs correctly
+3. Check that `commands` scope is added
 
-## 📝 Comandos de Desarrollo
+### Duplicate messages
+
+1. Check deduplication statistics at `/api/debug/dedup-stats`
+2. Verify Service Bus duplicate detection is enabled
+3. Review Azure Function logs for processing issues
+
+## Development Commands
 
 ```bash
-# Ejecutar el bot
+# Run the bot
 python -m src.app
 
-# Ejecutar tests (cuando estén implementados)
+# Run tests
 pytest
 
+# Run tests with coverage
+pytest --cov=src
+
+# Code formatting
+black src/ plugins/
+isort src/ plugins/
+
 # Linting
-flake8 src/
-black src/
-isort src/
+flake8 src/ plugins/
 
 # Azure Functions local
 func start
 ```
 
-## 🔒 Seguridad
+## Architecture Overview
 
-- **Nunca** commitees tokens reales al repositorio
-- Usa variables de entorno para todos los secretos
-- En producción, usa Azure Key Vault o similar
-- Verifica siempre las signatures de Slack
+The bot uses an asynchronous architecture:
 
-## 📚 Recursos Adicionales
+1. **Immediate Response**: Bot acknowledges Slack events within 3 seconds
+2. **Queue Processing**: Events are queued in Azure Service Bus for processing
+3. **Plugin System**: Modular plugins handle different command types
+4. **Deduplication**: Built-in mechanisms prevent duplicate responses
+
+## Security
+
+- **Never** commit real tokens to the repository
+- Use environment variables for all secrets
+- In production, use Azure Key Vault or similar
+- Always verify Slack signatures
+- Use HTTPS for all endpoints
+
+## Plugin System
+
+The bot supports a modular plugin architecture:
+
+- Plugins are configured in `plugins.yaml`
+- Each plugin extends the `BasePlugin` class
+- Supports regex and string pattern matching
+- Can respond in channels, DMs, or specific channels
+
+### Available Plugins
+
+- **ping** - Simple connectivity test
+- **incident** - Retrieve incident information by ID
+- **help** - Show available commands
+- **status** - Display bot health metrics
+
+## Monitoring
+
+The bot includes debugging endpoints:
+- `/api/debug/env` - Environment variables
+- `/api/debug/plugins` - Test plugin matching
+- `/api/debug/dedup-stats` - Deduplication statistics
+
+## Additional Resources
 
 - [Slack API Documentation](https://api.slack.com/)
 - [Slack Bolt Framework](https://slack.dev/bolt-python/tutorial/getting-started)
 - [Azure Functions Python Guide](https://docs.microsoft.com/en-us/azure/azure-functions/functions-reference-python)
+- [Azure Service Bus Documentation](https://docs.microsoft.com/en-us/azure/service-bus-messaging/)
 
 ---
 
-¡Tu bot de Slack está listo! 🎉
+Your Slack bot is ready!
