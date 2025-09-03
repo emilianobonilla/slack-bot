@@ -25,7 +25,6 @@ plugins:
     module: "plugins.help"
     patterns:
       - "help"
-      - "ayuda"
     description: "Show available commands and plugins"
     enabled: true
     
@@ -33,7 +32,6 @@ plugins:
     module: "plugins.status"
     patterns:
       - "status"
-      - "estado"
     description: "Show bot status and health"
     enabled: true
 

@@ -27,7 +27,7 @@ class PingPlugin(BasePlugin):
         channel_id = event_data.get('event', {}).get('channel')
         
         # Simple pong response
-        response_text = f"🏓 ¡Pong! <@{user_id}>"
+        response_text = f"Pong! <@{user_id}>"
         
         return PluginResponse(
             text=response_text,
@@ -36,4 +36,4 @@ class PingPlugin(BasePlugin):
     
     def get_help_text(self) -> str:
         """Return help text for ping plugin."""
-        return "ping - Responde con pong para verificar conectividad"
+        return "ping - Responds with pong to verify connectivity"

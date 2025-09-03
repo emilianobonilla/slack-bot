@@ -33,7 +33,7 @@ class StatusPlugin(BasePlugin):
         blocks = self._create_status_blocks(status_info)
         
         return PluginResponse(
-            text="📊 Estado del Bot",
+            text="Bot Status",
             blocks=blocks,
             response_type="channel"
         )
@@ -47,7 +47,7 @@ class StatusPlugin(BasePlugin):
             
             status_info = {
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "🟢 Operativo",
+                "status": "[OPERATIONAL]",
                 "cpu_usage": f"{cpu_percent:.1f}%",
                 "memory_usage": f"{memory.percent:.1f}%",
                 "memory_used": f"{memory.used / (1024**3):.1f} GB",
@@ -58,7 +58,7 @@ class StatusPlugin(BasePlugin):
             self.log_error(f"Error gathering system info: {e}")
             status_info = {
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "status": "🟡 Información limitada",
+                "status": "[LIMITED INFO]",
                 "cpu_usage": "N/A",
                 "memory_usage": "N/A",
                 "memory_used": "N/A",
@@ -75,14 +75,14 @@ class StatusPlugin(BasePlugin):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "📊 Estado del Bot"
+                    "text": "Bot Status"
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Estado:* {status_info['status']}"
+                    "text": f"*Status:* {status_info['status']}"
                 }
             },
             {
@@ -90,19 +90,19 @@ class StatusPlugin(BasePlugin):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*🕒 Última verificación:*\\n{status_info['timestamp']}"
+                        "text": f"*Last Check:*\\n{status_info['timestamp']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*💻 Uso de CPU:*\\n{status_info['cpu_usage']}"
+                        "text": f"*CPU Usage:*\\n{status_info['cpu_usage']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*🧠 Uso de Memoria:*\\n{status_info['memory_usage']}"
+                        "text": f"*Memory Usage:*\\n{status_info['memory_usage']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*💾 Memoria:*\\n{status_info['memory_used']} / {status_info['memory_total']}"
+                        "text": f"*Memory:*\\n{status_info['memory_used']} / {status_info['memory_total']}"
                     }
                 ]
             },
@@ -113,17 +113,17 @@ class StatusPlugin(BasePlugin):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*🔧 Componentes:*"
+                    "text": "*Components:*"
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "• ✅ Plugin System\\n" +
-                           "• ✅ Azure Service Bus\\n" +
-                           "• ✅ Slack API\\n" +
-                           "• ✅ Azure Functions"
+                    "text": "• Plugin System\\n" +
+                           "• Azure Service Bus\\n" +
+                           "• Slack API\\n" +
+                           "• Azure Functions"
                 }
             },
             {
@@ -131,7 +131,7 @@ class StatusPlugin(BasePlugin):
                 "elements": [
                     {
                         "type": "mrkdwn",
-                        "text": "🔄 Para más información detallada, contacta al administrador."
+                        "text": "For more detailed information, contact the administrator."
                     }
                 ]
             }
@@ -141,4 +141,4 @@ class StatusPlugin(BasePlugin):
     
     def get_help_text(self) -> str:
         """Return help text for status plugin."""
-        return "status|estado - Muestra el estado actual y métricas del bot"
+        return "status - Shows current status and bot metrics"

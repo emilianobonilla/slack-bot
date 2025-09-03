@@ -196,7 +196,7 @@ class PluginLoader:
             logger.error(f"Error processing message with plugin {plugin.name}: {e}")
             # Return error response
             return PluginResponse(
-                text=f"⚠️ Error procesando comando: {str(e)}",
+                text=f"Error processing command: {str(e)}",
                 response_type="channel"
             )
     
@@ -213,7 +213,7 @@ class PluginLoader:
         # Support both direct user_id and nested event structure
         user_id = event_data.get('user_id', '') or event_data.get('event', {}).get('user', '')
         return PluginResponse(
-            text=f"¡Hola <@{user_id}>! No entendí ese comando. Usa `@bot help` para ver los comandos disponibles.",
+            text=f"Hello <@{user_id}>! I didn't understand that command. Use `@bot help` to see available commands.",
             response_type="channel"
         )
     

@@ -27,9 +27,9 @@ def handle_hello_command(ack: Ack, respond: Respond, command):
     logger.log_command("/hello", user_id, channel_id, text=text)
     
     if text:
-        response = f"¡Hola! Me dijiste: '{text}' 👋"
+        response = f"Hello! You told me: '{text}'"
     else:
-        response = f"¡Hola <@{user_id}>! 👋 ¿Cómo estás?"
+        response = f"Hello <@{user_id}>! How are you?"
     
     respond(response)
 
@@ -54,7 +54,7 @@ def handle_info_command(ack: Ack, respond: Respond, command):
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": f"ℹ️ {app_config.NAME}"
+                "text": f"Info - {app_config.NAME}"
             }
         },
         {
@@ -62,11 +62,11 @@ def handle_info_command(ack: Ack, respond: Respond, command):
             "fields": [
                 {
                     "type": "mrkdwn",
-                    "text": f"*Versión:* {app_config.VERSION}"
+                    "text": f"*Version:* {app_config.VERSION}"
                 },
                 {
                     "type": "mrkdwn",
-                    "text": f"*Entorno:* {app_config.ENVIRONMENT}"
+                    "text": f"*Environment:* {app_config.ENVIRONMENT}"
                 }
             ]
         },
@@ -74,7 +74,7 @@ def handle_info_command(ack: Ack, respond: Respond, command):
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*Comandos disponibles:*\\n• `/hello [mensaje]` - Saluda al bot\\n• `/info` - Muestra información del bot\\n• `/help` - Muestra ayuda"
+                "text": "*Available commands:*\\n• `/hello [message]` - Greet the bot\\n• `/info` - Show bot information\\n• `/help` - Show help"
             }
         }
     ]
@@ -102,21 +102,21 @@ def handle_help_command(ack: Ack, respond: Respond, command):
             "type": "header",
             "text": {
                 "type": "plain_text",
-                "text": "🆘 Ayuda - Comandos del Bot"
+                "text": "Help - Bot Commands"
             }
         },
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "*Comandos disponibles:*"
+                "text": "*Available commands:*"
             }
         },
         {
             "type": "section",
             "text": {
                 "type": "mrkdwn",
-                "text": "• `/hello [mensaje opcional]`\\n  Saluda al bot con un mensaje opcional"
+                "text": "• `/hello [optional message]`\\n  Greet the bot with an optional message"
             }
         },
         {

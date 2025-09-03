@@ -284,7 +284,7 @@ def _fallback_message_processing(message_data):
         if user_id and channel_id:
             client.chat_postMessage(
                 channel=channel_id,
-                text=f"⚠️ <@{user_id}>, sistema en mantenimiento. Inténtalo de nuevo más tarde."
+                text=f"<@{user_id}>, system under maintenance. Please try again later."
             )
             logging.info("Fallback response sent to user")
             

@@ -47,7 +47,7 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
         message_preview = text[:100].replace('<@U', '<@').replace('>', '') if len(text) > 100 else text.replace('<@U', '<@').replace('>', '')
         
         say(
-            text=f"⚡ <@{user}>, recibí tu mensaje: '*{message_preview}*' y lo estoy procesando... (ID: {event_id[-8:]})",
+            text=f"<@{user}>, I received your message: '*{message_preview}*' and I'm processing it... (ID: {event_id[-8:]})",
             channel=channel
         )
         
@@ -83,7 +83,7 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
         else:
             # Fallback: send error message
             say(
-                text=f"❌ <@{user}>, hubo un problema procesando tu mensaje. Inténtalo de nuevo.",
+                text=f"<@{user}>, there was a problem processing your message. Please try again.",
                 channel=channel
             )
             logger.logger.error(
@@ -104,7 +104,7 @@ def handle_app_mention(event, say: Say, ack: Ack, client, body):
         try:
             # Try to send error response
             say(
-                text=f"⚠️ <@{user}>, ocurrió un error inesperado. Por favor inténtalo de nuevo.",
+                text=f"<@{user}>, an unexpected error occurred. Please try again.",
                 channel=channel
             )
         except:
@@ -207,7 +207,7 @@ def handle_team_join(event, say: Say, ack: Ack):
     
     if user_id:
         # Send welcome message to the user
-        welcome_message = f"¡Bienvenido/a al equipo, {user_name}! 🎉 Soy el bot de Slack y estoy aquí para ayudarte."
+        welcome_message = f"Welcome to the team, {user_name}! I'm the Slack bot and I'm here to help you."
         
         try:
             say(

@@ -31,7 +31,7 @@ class IncidentPlugin(BasePlugin):
         
         if not incident_id:
             return PluginResponse(
-                text="❌ No pude extraer el número del incidente. Formato esperado: 'incidente 123'",
+                text="I couldn't extract the incident number. Expected format: 'incidente 123'",
                 response_type="channel"
             )
         
@@ -48,7 +48,7 @@ class IncidentPlugin(BasePlugin):
         blocks = self._create_incident_blocks(incident_info)
         
         return PluginResponse(
-            text=f"📋 Información del Incidente #{incident_id}",
+            text=f"Incident Information #{incident_id}",
             blocks=blocks,
             response_type="channel"
         )
@@ -64,53 +64,53 @@ class IncidentPlugin(BasePlugin):
         This would be replaced with actual API call in production.
         """
         # Mock data generation
-        statuses = ["Abierto", "En Progreso", "Resuelto", "Cerrado"]
-        priorities = ["Baja", "Media", "Alta", "Crítica"]
-        assignees = ["Juan Pérez", "María García", "Carlos López", "Ana Martínez"]
+        statuses = ["Open", "In Progress", "Resolved", "Closed"]
+        priorities = ["Low", "Medium", "High", "Critical"]
+        assignees = ["John Doe", "Jane Smith", "Mike Johnson", "Sarah Wilson"]
         
         # Use incident_id as seed for consistent "random" data
         random.seed(int(incident_id))
         
         return {
             "id": incident_id,
-            "title": f"Incidente de sistema #{incident_id}",
+            "title": f"System Incident #{incident_id}",
             "status": random.choice(statuses),
             "priority": random.choice(priorities),
             "assignee": random.choice(assignees),
             "created_at": "2025-09-03 10:30:00",
             "updated_at": "2025-09-03 14:15:00",
-            "description": f"Descripción del incidente #{incident_id}. Problema reportado por usuario.",
-            "resolution": "Investigando causa raíz del problema." if random.choice([True, False]) else "Resuelto mediante reinicio de servicio."
+            "description": f"Description of incident #{incident_id}. Issue reported by user.",
+            "resolution": "Investigating root cause of the problem." if random.choice([True, False]) else "Resolved by service restart."
         }
     
     def _create_incident_blocks(self, incident_info: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Create Slack blocks for incident information display."""
         
-        # Priority emoji mapping
-        priority_emojis = {
-            "Baja": "🟢",
-            "Media": "🟡", 
-            "Alta": "🟠",
-            "Crítica": "🔴"
+        # Priority markers (removed emojis)
+        priority_markers = {
+            "Low": "[LOW]",
+            "Medium": "[MEDIUM]", 
+            "High": "[HIGH]",
+            "Critical": "[CRITICAL]"
         }
         
-        # Status emoji mapping
-        status_emojis = {
-            "Abierto": "🆕",
-            "En Progreso": "⚠️",
-            "Resuelto": "✅",
-            "Cerrado": "🔒"
+        # Status markers (removed emojis)
+        status_markers = {
+            "Open": "[OPEN]",
+            "In Progress": "[IN PROGRESS]",
+            "Resolved": "[RESOLVED]",
+            "Closed": "[CLOSED]"
         }
         
-        priority_emoji = priority_emojis.get(incident_info["priority"], "⚪")
-        status_emoji = status_emojis.get(incident_info["status"], "❓")
+        priority_marker = priority_markers.get(incident_info["priority"], "[UNKNOWN]")
+        status_marker = status_markers.get(incident_info["status"], "[UNKNOWN]")
         
         blocks = [
             {
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": f"📋 Incidente #{incident_info['id']}"
+                    "text": f"Incident #{incident_info['id']}"
                 }
             },
             {
@@ -125,19 +125,19 @@ class IncidentPlugin(BasePlugin):
                 "fields": [
                     {
                         "type": "mrkdwn",
-                        "text": f"*Estado:* {status_emoji} {incident_info['status']}"
+                        "text": f"*Status:* {status_marker} {incident_info['status']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Prioridad:* {priority_emoji} {incident_info['priority']}"
+                        "text": f"*Priority:* {priority_marker} {incident_info['priority']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Asignado a:* {incident_info['assignee']}"
+                        "text": f"*Assigned to:* {incident_info['assignee']}"
                     },
                     {
                         "type": "mrkdwn",
-                        "text": f"*Creado:* {incident_info['created_at']}"
+                        "text": f"*Created:* {incident_info['created_at']}"
                     }
                 ]
             },
@@ -145,7 +145,7 @@ class IncidentPlugin(BasePlugin):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Descripción:*\\n{incident_info['description']}"
+                    "text": f"*Description:*\\n{incident_info['description']}"
                 }
             }
         ]
@@ -156,7 +156,7 @@ class IncidentPlugin(BasePlugin):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": f"*Resolución:*\\n{incident_info['resolution']}"
+                    "text": f"*Resolution:*\\n{incident_info['resolution']}"
                 }
             })
         
@@ -164,4 +164,4 @@ class IncidentPlugin(BasePlugin):
     
     def get_help_text(self) -> str:
         """Return help text for incident plugin."""
-        return "incidente <número> - Obtiene información detallada del incidente especificado"
+        return "incidente <number> - Gets detailed information for the specified incident"

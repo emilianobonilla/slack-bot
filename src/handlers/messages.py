@@ -36,22 +36,22 @@ def handle_direct_message(message, say: Say, ack: Ack):
     text_lower = text.lower()
     
     if any(greeting in text_lower for greeting in ["hola", "hello", "hi", "hey"]):
-        response = f"¡Hola <@{user}>! 👋 ¿En qué puedo ayudarte hoy?"
+        response = f"Hello <@{user}>! How can I help you today?"
     elif any(help_word in text_lower for help_word in ["ayuda", "help", "socorro"]):
-        response = ("¡Por supuesto! Aquí tienes algunas cosas que puedo hacer:\\n"
-                   "• Responder a tus mensajes\\n"
-                   "• Usar comandos como `/hello`, `/info`, `/help`\\n"
-                   "• Mencióname en canales con `@bot`\\n\\n"
-                   "¿En qué más puedo ayudarte?")
+        response = ("Of course! Here are some things I can do:\\n"
+                   "• Respond to your messages\\n"
+                   "• Use commands like `/hello`, `/info`, `/help`\\n"
+                   "• Mention me in channels with `@bot`\\n\\n"
+                   "What else can I help you with?")
     elif any(thanks in text_lower for thanks in ["gracias", "thanks", "thank you"]):
-        response = "¡De nada! 😊 Siempre estoy aquí para ayudarte."
+        response = "You're welcome! I'm always here to help."
     elif any(bye in text_lower for bye in ["adiós", "adios", "bye", "goodbye", "hasta luego"]):
-        response = "¡Hasta luego! 👋 Que tengas un excelente día."
+        response = "Goodbye! Have an excellent day."
     else:
         # Default response for unrecognized messages
-        response = (f"Recibí tu mensaje: \"{text}\"\\n\\n"
-                   "No estoy seguro de cómo responder a eso específicamente, pero estoy aquí para ayudar. "
-                   "Puedes usar `/help` para ver qué comandos están disponibles.")
+        response = (f"I received your message: \"{text}\"\\n\\n"
+                   "I'm not sure how to respond to that specifically, but I'm here to help. "
+                   "You can use `/help` to see what commands are available.")
     
     say(response)
     logger.logger.info("Responded to direct message", user_id=user, message_length=len(text))
@@ -81,9 +81,9 @@ def handle_keyword_mention(message, say: Say, ack: Ack):
     if any(keyword in text for keyword in urgent_keywords):
         logger.log_event("keyword_mention", message, keywords_found=True)
         
-        response = (f"¡Hola <@{user}>! 👋 Vi que podrías necesitar ayuda. "
-                   f"Si necesitas asistencia, puedes mencionarme directamente o usar `/help` "
-                   f"para ver los comandos disponibles.")
+        response = (f"Hello <@{user}>! I saw you might need help. "
+                   f"If you need assistance, you can mention me directly or use `/help` "
+                   f"to see available commands.")
         
         say(response)
         logger.logger.info("Responded to keyword mention", user_id=user, channel_id=channel)

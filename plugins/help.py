@@ -27,7 +27,7 @@ class HelpPlugin(BasePlugin):
         blocks = self._create_help_blocks()
         
         return PluginResponse(
-            text="🆘 Ayuda - Comandos disponibles",
+            text="Help - Available Commands",
             blocks=blocks,
             response_type="channel"
         )
@@ -40,34 +40,14 @@ class HelpPlugin(BasePlugin):
                 "type": "header",
                 "text": {
                     "type": "plain_text",
-                    "text": "🤖 Ayuda del Bot"
+                    "text": "Bot Help"
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "¡Hola! Soy tu bot de Slack. Aquí están los comandos que puedes usar:"
-                }
-            },
-            {
-                "type": "divider"
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "*📋 Comandos disponibles:*"
-                }
-            },
-            {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "• `@bot ping` - Verifica conectividad\\n" +
-                           "• `@bot incidente <número>` - Obtiene información de incidente\\n" +
-                           "• `@bot help` o `@bot ayuda` - Muestra esta ayuda\\n" +
-                           "• `@bot status` o `@bot estado` - Muestra estado del bot"
+                    "text": "Hello! I'm your Slack bot. Here are the commands you can use:"
                 }
             },
             {
@@ -77,17 +57,37 @@ class HelpPlugin(BasePlugin):
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*💡 Cómo usar:*\\n" +
-                           "1. Menciona al bot con `@bot` seguido del comando\\n" +
-                           "2. También puedes enviarme un mensaje directo\\n" +
-                           "3. Usa `/hello`, `/info`, `/help` como comandos slash"
+                    "text": "*Available commands:*"
                 }
             },
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    "text": "*📝 Ejemplos:*\\n" +
+                "text": "• `@bot ping` - Verify connectivity\\n" +
+                           "• `@bot incidente <number>` - Get incident information\\n" +
+                           "• `@bot help` - Show this help\\n" +
+                           "• `@bot status` - Show bot status"
+                }
+            },
+            {
+                "type": "divider"
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*How to use:*\\n" +
+                           "1. Mention the bot with `@bot` followed by the command\\n" +
+                           "2. You can also send me a direct message\\n" +
+                           "3. Use `/hello`, `/info`, `/help` as slash commands"
+                }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "*Examples:*\\n" +
                            "• `@bot ping`\\n" +
                            "• `@bot incidente 123`\\n" +
                            "• `@bot help`"
@@ -96,16 +96,16 @@ class HelpPlugin(BasePlugin):
             {
                 "type": "context",
                 "elements": [
+                [
                     {
                         "type": "mrkdwn",
-                        "text": "💬 ¿Necesitas ayuda adicional? Contacta al administrador del sistema."
+                        "text": "Need additional help? Contact the system administrator."
                     }
                 ]
-            }
         ]
         
         return blocks
     
     def get_help_text(self) -> str:
         """Return help text for help plugin."""
-        return "help|ayuda - Muestra esta lista de comandos disponibles"
+        return "help - Shows this list of available commands"
