@@ -37,15 +37,15 @@ def handle_direct_message(message, say: Say, ack: Ack):
     
     if any(greeting in text_lower for greeting in ["hola", "hello", "hi", "hey"]):
         response = f"Hello <@{user}>! How can I help you today?"
-    elif any(help_word in text_lower for help_word in ["ayuda", "help", "socorro"]):
+    elif any(help_word in text_lower for help_word in ["help", "socorro"]):
         response = ("Of course! Here are some things I can do:\\n"
                    "• Respond to your messages\\n"
                    "• Use commands like `/hello`, `/info`, `/help`\\n"
                    "• Mention me in channels with `@bot`\\n\\n"
                    "What else can I help you with?")
-    elif any(thanks in text_lower for thanks in ["gracias", "thanks", "thank you"]):
+    elif any(thanks in text_lower for thanks in ["thanks", "thank you"]):
         response = "You're welcome! I'm always here to help."
-    elif any(bye in text_lower for bye in ["adiós", "adios", "bye", "goodbye", "hasta luego"]):
+    elif any(bye in text_lower for bye in ["bye", "goodbye", "hasta luego"]):
         response = "Goodbye! Have an excellent day."
     else:
         # Default response for unrecognized messages
@@ -76,7 +76,7 @@ def handle_keyword_mention(message, say: Say, ack: Ack):
     channel = message.get("channel")
     
     # Look for specific keywords that might require bot attention
-    urgent_keywords = ["urgente", "emergency", "problema", "error", "help"]
+    urgent_keywords = ["emergency", "error", "help"]
     
     if any(keyword in text for keyword in urgent_keywords):
         logger.log_event("keyword_mention", message, keywords_found=True)
@@ -107,7 +107,7 @@ def register_message_handlers(app: App) -> None:
     # Keyword-based responses in channels (optional - be careful not to spam)
     # Uncomment the following lines if you want the bot to respond to keywords in channels
     # app.message(
-    #     re.compile(r".*(urgente|emergency|problema|error).*", re.IGNORECASE)
+    #     re.compile(r".*(emergency|error).*", re.IGNORECASE)
     # )(handle_keyword_mention)
     
     logger.logger.info("Message handlers registered successfully")

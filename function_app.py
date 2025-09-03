@@ -5,60 +5,67 @@ import os
 from slack_bolt import App
 import hashlib
 import hmac
+from datetime import datetime
 
 # Import our app structure
-try:
-    from src.app import create_app
-    from src.config import validate_configuration
-except ImportError:
-    # Fallback for when src module isn't available
-    create_app = None
-    validate_configuration = None
+from src.app import create_app
+from src.config import validate_configuration
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
 # Initialize Slack app
-slack_app = None
 try:
-    if create_app:
-        # Use our structured app creation
-        slack_app = create_app()
-        logging.info("Slack app initialized successfully using src.app")
-    else:
-        # Fallback to direct initialization
-        slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
-        slack_signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
-        
-        if slack_bot_token and slack_signing_secret:
-            slack_app = App(
-                token=slack_bot_token,
-                signing_secret=slack_signing_secret,
-                process_before_response=True
-            )
-            logging.info("Slack app initialized successfully (fallback mode)")
-        else:
-            logging.warning("Slack tokens not found. Slack functionality will be disabled.")
+    slack_app = create_app()
+    logging.info("Slack app initialized successfully")
 except Exception as e:
     logging.error(f"Failed to initialize Slack app: {e}")
+    slack_app = None
 
 # Azure Functions app
 app = func.FunctionApp()
 
-# Example Slack event handler (registered only if slack_app is available)
-if slack_app:
-    @slack_app.message("hello")
-    def handle_hello(message, say):
-        """Handle hello messages"""
-        user = message['user']
-        say(f"Hi <@{user}>! 👋")
-    
-    # Example slash command handler
-    @slack_app.command("/hello")
-    def handle_hello_command(ack, respond, command):
-        """Handle /hello slash command"""
-        ack()
-        respond(f"Hello {command['user_name']}! This is a response to your slash command.")
+# Helper functions for health checks
+def _check_configuration() -> bool:
+    """Check if basic configuration is valid"""
+    try:
+        required_vars = ["SLACK_BOT_TOKEN", "SLACK_SIGNING_SECRET"]
+        return all(os.environ.get(var) for var in required_vars)
+    except Exception:
+        return False
+
+def _check_src_modules() -> bool:
+    """Check if src modules can be imported"""
+    try:
+        from src.app import create_app as test_create_app
+        from src.config import validate_configuration as test_validate
+        return True
+    except ImportError:
+        return False
+    except Exception:
+        return False
+
+def _check_plugins() -> bool:
+    """Check if plugin system is working"""
+    try:
+        from src.plugins.loader import PluginLoader
+        loader = PluginLoader()
+        plugins = loader.load_plugins()
+        return len(plugins) > 0
+    except Exception:
+        return False
+
+def _check_dependencies() -> bool:
+    """Check if critical dependencies are available"""
+    try:
+        import slack_bolt
+        import azure.servicebus
+        import yaml
+        return True
+    except ImportError:
+        return False
+    except Exception:
+        return False
 
 # Utility function to verify Slack request signature
 def verify_slack_signature(signing_secret: str, timestamp: str, body: bytes, signature: str) -> bool:
@@ -151,26 +158,74 @@ def slack_events(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f"Error processing Slack event: {e}", exc_info=True)
         return func.HttpResponse("Internal Server Error", status_code=500)
 
-# Simple HTTP trigger for testing
-@app.route(route="hello", auth_level=func.AuthLevel.ANONYMOUS)
-def hello(req: func.HttpRequest) -> func.HttpResponse:
-    """Simple hello endpoint for testing"""
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            req_body = None
+# Health check endpoint
+@app.route(route="health", auth_level=func.AuthLevel.ANONYMOUS)
+def health_check(req: func.HttpRequest) -> func.HttpResponse:
+    """Comprehensive health check endpoint for monitoring and debugging"""
+    try:
+        # Collect health information
+        health_data = {
+            "status": "healthy",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "service": {
+                "name": "slack-bot",
+                "version": os.environ.get("APP_VERSION", "1.0.0"),
+                "environment": os.environ.get("AZURE_FUNCTIONS_ENVIRONMENT", "unknown")
+            },
+            "components": {
+                "slack_app": {
+                    "status": "up" if slack_app is not None else "down",
+                    "initialized": slack_app is not None
+                },
+                "azure_functions": {
+                    "status": "up",
+                    "runtime": os.environ.get("FUNCTIONS_WORKER_RUNTIME", "unknown"),
+                    "version": os.environ.get("FUNCTIONS_EXTENSION_VERSION", "unknown")
+                },
+                "configuration": {
+                    "status": "up" if _check_configuration() else "down",
+                    "slack_bot_token_present": bool(os.environ.get("SLACK_BOT_TOKEN")),
+                    "slack_signing_secret_present": bool(os.environ.get("SLACK_SIGNING_SECRET")),
+                    "service_bus_configured": bool(os.environ.get("SERVICE_BUS_CONNECTION_STRING"))
+                }
+            },
+            "checks": {
+                "src_modules": _check_src_modules(),
+                "plugins": _check_plugins(),
+                "dependencies": _check_dependencies()
+            }
+        }
+        
+        # Determine overall status
+        component_statuses = [comp.get("status", "unknown") for comp in health_data["components"].values()]
+        check_results = [check for check in health_data["checks"].values()]
+        
+        if "down" in component_statuses or False in check_results:
+            health_data["status"] = "degraded"
+            status_code = 503
         else:
-            name = req_body.get('name') if req_body else None
-    
-    if name:
-        return func.HttpResponse(f"Hello, {name}! This Azure Function is working.")
-    else:
+            health_data["status"] = "healthy"
+            status_code = 200
+            
         return func.HttpResponse(
-            "Please pass a name in the query string or in the request body",
-            status_code=400
+            json.dumps(health_data, indent=2),
+            mimetype="application/json",
+            status_code=status_code
         )
+        
+    except Exception as e:
+        logging.error(f"Health check failed: {e}", exc_info=True)
+        error_response = {
+            "status": "unhealthy",
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "error": str(e)
+        }
+        return func.HttpResponse(
+            json.dumps(error_response, indent=2),
+            mimetype="application/json",
+            status_code=503
+        )
+
 
 @app.route(route="test-settings", auth_level=func.AuthLevel.ANONYMOUS)
 def test_settings(req: func.HttpRequest) -> func.HttpResponse:

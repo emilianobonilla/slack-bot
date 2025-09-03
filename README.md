@@ -217,6 +217,7 @@ plugins:
 
 The bot includes several debugging endpoints:
 
+- `/api/health` - Comprehensive health check and system status
 - `/api/debug/env` - Display environment variables
 - `/api/debug/plugins` - Test plugin matching
 - `/api/debug/dedup-stats` - View deduplication statistics

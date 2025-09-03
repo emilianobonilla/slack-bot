@@ -52,7 +52,7 @@ Direct slash command tests:
 - **Help Command**: `/help`
 
 ### Basic Tests
-- **Hello Endpoint**: Simple health check
+- **Health Check**: Comprehensive health monitoring endpoint
 
 ## Usage Tips
 

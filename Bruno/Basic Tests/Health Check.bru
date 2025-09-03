@@ -1,0 +1,72 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{base_url}}/api/health
+  body: none
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+docs {
+  # Health Check Endpoint
+  
+  Comprehensive health check endpoint for monitoring the Slack bot's status.
+  
+  ## Response Structure
+  ```json
+  {
+    "status": "healthy|degraded|unhealthy",
+    "timestamp": "2025-09-03T21:15:58.323512Z",
+    "service": {
+      "name": "slack-bot",
+      "version": "1.0.0",
+      "environment": "Development|Production"
+    },
+    "components": {
+      "slack_app": {
+        "status": "up|down",
+        "initialized": true
+      },
+      "azure_functions": {
+        "status": "up",
+        "runtime": "python",
+        "version": "~4"
+      },
+      "configuration": {
+        "status": "up|down",
+        "slack_bot_token_present": true,
+        "slack_signing_secret_present": true,
+        "service_bus_configured": true
+      }
+    },
+    "checks": {
+      "src_modules": true,
+      "plugins": true,
+      "dependencies": true
+    }
+  }
+  ```
+  
+  ## Status Codes
+  - **200 OK**: All systems healthy
+  - **503 Service Unavailable**: Degraded or unhealthy status
+  
+  ## Status Values
+  - **healthy**: All components and checks passing
+  - **degraded**: Some non-critical components failing
+  - **unhealthy**: Critical components failing
+  
+  ## Use Cases
+  - External monitoring systems (Pingdom, DataDog, etc.)
+  - Load balancer health checks
+  - Deployment verification
+  - System diagnostics
+  - Uptime monitoring
+}
