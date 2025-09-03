@@ -1,18 +1,21 @@
 # Azure Functions
-azure-functions
+azure-functions==1.18.0
 
 # Slack Bot Framework
-slack-bolt
-slack-sdk
+slack-bolt==1.18.1
+slack-sdk==3.26.2
 
 # HTTP requests
-requests
+requests==2.31.0
 
 # Environment variables
-python-dotenv
+python-dotenv==1.0.0
 
 # Logging
-structlog
+structlog==23.2.0
+
+# Date/time utilities
+python-dateutil==2.8.2
 
 # Uncomment to enable Azure Monitor OpenTelemetry
 # Ref: aka.ms/functions-azure-monitor-python 

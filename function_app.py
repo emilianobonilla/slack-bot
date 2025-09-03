@@ -6,24 +6,39 @@ from slack_bolt import App
 import hashlib
 import hmac
 
+# Import our app structure
+try:
+    from src.app import create_app
+    from src.config import validate_configuration
+except ImportError:
+    # Fallback for when src module isn't available
+    create_app = None
+    validate_configuration = None
+
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Initialize Slack app (only if tokens are available)
+# Initialize Slack app
 slack_app = None
 try:
-    slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
-    slack_signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
-    
-    if slack_bot_token and slack_signing_secret:
-        slack_app = App(
-            token=slack_bot_token,
-            signing_secret=slack_signing_secret,
-            process_before_response=True
-        )
-        logging.info("Slack app initialized successfully")
+    if create_app:
+        # Use our structured app creation
+        slack_app = create_app()
+        logging.info("Slack app initialized successfully using src.app")
     else:
-        logging.warning("Slack tokens not found. Slack functionality will be disabled.")
+        # Fallback to direct initialization
+        slack_bot_token = os.environ.get("SLACK_BOT_TOKEN")
+        slack_signing_secret = os.environ.get("SLACK_SIGNING_SECRET")
+        
+        if slack_bot_token and slack_signing_secret:
+            slack_app = App(
+                token=slack_bot_token,
+                signing_secret=slack_signing_secret,
+                process_before_response=True
+            )
+            logging.info("Slack app initialized successfully (fallback mode)")
+        else:
+            logging.warning("Slack tokens not found. Slack functionality will be disabled.")
 except Exception as e:
     logging.error(f"Failed to initialize Slack app: {e}")
 

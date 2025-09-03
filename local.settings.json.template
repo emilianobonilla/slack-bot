@@ -1,0 +1,19 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "SLACK_BOT_TOKEN": "xoxb-your-bot-token-here",
+    "SLACK_SIGNING_SECRET": "your-signing-secret-here",
+    "SLACK_APP_TOKEN": "xapp-your-app-token-here",
+    "SLACK_SOCKET_MODE": "true",
+    "AZURE_FUNCTIONS_ENVIRONMENT": "Development",
+    "LOG_LEVEL": "DEBUG",
+    "APP_NAME": "SlackBot",
+    "APP_VERSION": "1.0.0"
+  },
+  "Host": {
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}
