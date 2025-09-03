@@ -1,0 +1,19 @@
+# Azure Functions
+azure-functions
+
+# Slack Bot Framework
+slack-bolt
+slack-sdk
+
+# HTTP requests
+requests
+
+# Environment variables
+python-dotenv
+
+# Logging
+structlog
+
+# Uncomment to enable Azure Monitor OpenTelemetry
+# Ref: aka.ms/functions-azure-monitor-python 
+# azure-monitor-opentelemetry
