@@ -193,7 +193,7 @@ slack_app_token.txt
 slack_app_manifest.json
 
 # IDE specific
-.vscode/
+
 .vs/
 *.swp
 *.swo
@@ -239,3 +239,5 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 WARP.md
+
+.python_packages
